@@ -202,6 +202,9 @@ export class AppComponent implements OnInit {
    */
   public loadData() {
 
+    // Change default paginator message.
+    this.paginator._intl.itemsPerPageLabel = 'Employees per page';
+
     // Instance services.
     this.exampleDatabase = new EmployeeService(this.httpClient);
 

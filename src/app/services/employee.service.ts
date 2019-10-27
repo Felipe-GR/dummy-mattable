@@ -30,27 +30,24 @@ export class EmployeeService {
   // Temporarily stores data from dialogs
   dialogData: any;
 
-  /**
-   * Format JSON
-   */
-  private userFormat: { id: number, name: string; salary: number; age: number };
-
   getDialogData() {
     return this.dialogData;
   }
 
   // TO-DO: Implement toaster service for displaying messages.
-  // TO-DO: Fix error cast format api
+  // TO-DO: Fix error: unable to get property 'id' of undefined or null reference
   /**
    * Get all employees.
    */
   getAllEmployees(): void {
+
     this.httpClient.get<Employee[]>(this.API_URL + 'employees').subscribe(data => {
         this.dataChange.next(data);
       },
       (error: HttpErrorResponse) => {
         console.log(error.name + ' ' + error.message);
       });
+
   }
 
   /**
@@ -59,22 +56,22 @@ export class EmployeeService {
    */
   addEmployee(employee: Employee): void {
 
-    this.userFormat = {
-      id: employee.id,
+    // Temporally fix, to refresh table, make sure that id correspond to lastId + 1.
+    this.dialogData = employee;
+
+    this.httpClient.post(this.API_URL + 'create', {
       name: employee.employee_name,
       salary: employee.employee_salary,
       age: employee.employee_age
-    };
-
-    this.httpClient.post(this.API_URL + 'create', this.userFormat).subscribe(data => {
+    }).subscribe(data => {
         this.dialogData = employee;
         console.log('Successfully added');
       },
       (err: HttpErrorResponse) => {
         console.log('Error occurred. Details: ' + err.name + ' ' + err.message);
       });
-  }
 
+  }
 
   /**
    * Update employee data.
@@ -82,14 +79,14 @@ export class EmployeeService {
    */
   updateEmployee(employee: Employee): void {
 
-    this.userFormat = {
-      id: employee.id,
+    // Temporally fix, to refresh table, make sure that id correspond to edit Id.
+    this.dialogData = employee;
+
+    this.httpClient.put(this.API_URL + 'update' + '/' + employee.id, {
       name: employee.employee_name,
       salary: employee.employee_salary,
       age: employee.employee_age
-    };
-
-    this.httpClient.put(this.API_URL + 'update' + '/' + employee.id, this.userFormat).subscribe(data => {
+    }).subscribe(data => {
         this.dialogData = employee;
         console.log('Successfully edited');
       },
